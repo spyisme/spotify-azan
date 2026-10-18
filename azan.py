@@ -195,11 +195,10 @@ def pause_if_playing():
 
 def send_whatsapp_message(message):
     recipient = os.environ.get('WHATSAPP_TO', '').strip()
-    api_key = os.environ.get('WHATSAPP_API_KEY', '').strip()
     password = os.environ.get('WHATSAPP_PASSWORD', '')
 
-    if not recipient or not api_key:
-        LOG.warning('WhatsApp notification skipped; set WHATSAPP_API_KEY and WHATSAPP_TO to enable')
+    if not recipient or not password:
+        LOG.warning('WhatsApp notification skipped; set WHATSAPP_PASSWORD and WHATSAPP_TO to enable')
         return
     try:
         response = SESSION.post(
@@ -207,7 +206,7 @@ def send_whatsapp_message(message):
             headers={
                 'accept-language': 'en-US,en;q=0.9',
                 'content-type': 'application/json',
-                'x-api-key': api_key,
+                'x-api-key': "Whatsappsecretkeeeey2@1",
             },
             json={'to': recipient, 'content': message, 'passcode': password},
             timeout=15,
