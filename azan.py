@@ -29,6 +29,29 @@ LOG = logging.getLogger('spotify-azan')
 SESSION = requests.Session()
 
 
+def load_config():
+    """Load simple KEY=VALUE settings for direct CLI runs; preserve existing env."""
+    config_file = Path(__file__).resolve().parent / 'config.env'
+    try:
+        lines = config_file.read_text(encoding='utf-8').splitlines()
+    except FileNotFoundError:
+        return
+    for line in lines:
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        if line.startswith('export '):
+            line = line[7:].lstrip()
+        key, separator, value = line.partition('=')
+        key = key.strip()
+        if not separator or not key:
+            continue
+        value = value.strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
+            value = value[1:-1]
+        os.environ.setdefault(key, value)
+
+
 def atomic_json(path, data):
     ROOT.mkdir(mode=0o700, parents=True, exist_ok=True)
     os.chmod(ROOT, 0o700)
@@ -286,6 +309,7 @@ def run():
 
 
 def main():
+    load_config()
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
     parser = argparse.ArgumentParser()
     parser.add_argument('command', choices=('auth', 'run', 'times', 'test-pause'))
