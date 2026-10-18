@@ -219,10 +219,12 @@ def send_whatsapp_message(message):
 
 def test_pause():
     if pause_if_playing():
+        send_whatsapp_message('Spotify paused for azan "Test"')
         LOG.info('Resuming Spotify in 5 seconds')
         time.sleep(5)
         spotify('PUT', 'me/player/play')
         LOG.info('Spotify resume requested successfully')
+        send_whatsapp_message('Spotify resumed')
 
 
 def run():
