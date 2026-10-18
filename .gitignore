@@ -1,0 +1,9 @@
+tokens.json
+state.json
+prayers.json
+config.env
+.env
+.venv/
+data/
+__pycache__/
+*.py[cod]

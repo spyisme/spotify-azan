@@ -1,0 +1,23 @@
+[Unit]
+Description=Spotify Azan Pauser
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=spotifyazan
+Group=spotifyazan
+WorkingDirectory=/opt/spotify-azan
+EnvironmentFile=/opt/spotify-azan/config.env
+Environment=AZAN_STATE_DIR=/opt/spotify-azan/data
+ExecStart=/opt/spotify-azan/.venv/bin/python /opt/spotify-azan/azan.py run
+Restart=always
+RestartSec=15
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+ReadWritePaths=/opt/spotify-azan/data
+
+[Install]
+WantedBy=multi-user.target
