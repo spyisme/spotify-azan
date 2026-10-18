@@ -193,6 +193,30 @@ def pause_if_playing():
     return True
 
 
+def send_whatsapp_message(message):
+    recipient = os.environ.get('WHATSAPP_TO', '').strip()
+    api_key = os.environ.get('WHATSAPP_API_KEY', '').strip()
+    password = os.environ.get('WHATSAPP_PASSWORD', '')
+
+    if not recipient or not api_key:
+        LOG.warning('WhatsApp notification skipped; set WHATSAPP_API_KEY and WHATSAPP_TO to enable')
+        return
+    try:
+        response = SESSION.post(
+            os.environ.get('WHATSAPP_API_URL', 'https://whatsapp.spysnet.com/sendText'),
+            headers={
+                'accept-language': 'en-US,en;q=0.9',
+                'content-type': 'application/json',
+                'x-api-key': api_key,
+            },
+            json={'to': recipient, 'content': message, 'passcode': password},
+            timeout=15,
+        )
+        response.raise_for_status()
+    except requests.RequestException:
+        LOG.exception('WhatsApp notification failed')
+
+
 def test_pause():
     if pause_if_playing():
         LOG.info('Resuming Spotify in 5 seconds')
@@ -229,6 +253,7 @@ def run():
                         paused.add(key)
                         state_changed = True
                         LOG.info('Paused for %s; scheduled prayer time is %s Cairo time', name, clock)
+                        send_whatsapp_message(f'Spotify paused for azan "{name}"')
                     else:
                         completed.add(key)
                         state_changed = True
@@ -243,6 +268,7 @@ def run():
                     completed.add(key)
                     state_changed = True
                     LOG.info('Resumed after %s', name)
+                    send_whatsapp_message('Spotify resumed')
                 elif key not in completed and key not in paused and now >= resume_at:
                     # The service missed the pause window, or Spotify was idle.
                     completed.add(key)

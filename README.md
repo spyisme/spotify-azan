@@ -15,6 +15,10 @@ Spotify Premium and playback on an active Spotify Connect device are required. S
 - A Spotify app Client ID
 - For continuous operation: an Ubuntu server with systemd
 
+## WhatsApp notifications
+
+Set `WHATSAPP_API_KEY` and `WHATSAPP_TO` to enable notifications. Set `WHATSAPP_PASSWORD` if the WhatsApp API requires a passcode; it defaults to an empty value. The service sends `Spotify paused for azan "PrayerName"` after a successful azan pause and `Spotify resumed` after playback resumes. Notifications are best effort; failures are logged without interrupting playback control. The API URL defaults to `https://whatsapp.spysnet.com/sendText`; override it with `WHATSAPP_API_URL` if needed.
+
 ## Spotify app setup
 
 1. Create an app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
@@ -60,7 +64,12 @@ sudo install -d -o spotifyazan -g spotifyazan -m 700 /opt/spotify-azan/data
 sudo python3 -m venv /opt/spotify-azan/.venv
 sudo /opt/spotify-azan/.venv/bin/pip install -r /opt/spotify-azan/requirements.txt
 
-printf 'SPOTIFY_CLIENT_ID=YOUR_CLIENT_ID\n' | sudo tee /opt/spotify-azan/config.env >/dev/null
+sudo tee /opt/spotify-azan/config.env >/dev/null <<'EOF'
+SPOTIFY_CLIENT_ID=YOUR_CLIENT_ID
+WHATSAPP_API_KEY=YOUR_WHATSAPP_API_KEY
+WHATSAPP_TO=201111251681
+WHATSAPP_PASSWORD=
+EOF
 sudo chown root:spotifyazan /opt/spotify-azan/config.env
 sudo chmod 640 /opt/spotify-azan/config.env
 ```
