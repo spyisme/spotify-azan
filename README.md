@@ -2,8 +2,8 @@
 
 Automatically pauses active Spotify playback around Cairo prayer times.
 
-- Pauses **1 minute before** each prayer.
-- Resumes **2 minutes after** the scheduled prayer time.
+- Checks playback every **3 seconds** from **1 minute before** each prayer through **2 minutes after**, pausing it whenever it is playing.
+- Resumes playback **2 minutes after** the scheduled prayer time if the service paused it.
 - Uses Cairo time (`Africa/Cairo`) and AlAdhan calculation method 5 (Egyptian General Authority of Survey).
 
 Spotify Premium and playback on an active Spotify Connect device are required. Spotify API requests are best-effort and may be delayed.

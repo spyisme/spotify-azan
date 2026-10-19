@@ -250,7 +250,7 @@ def test_pause():
 
 
 def run():
-    LOG.info('Scheduler started: Cairo, Egyptian Survey method 5, pause 1 minute before prayer and resume 2 minutes after')
+    LOG.info('Scheduler started: Cairo, Egyptian Survey method 5, check playback every 3 seconds from 1 minute before prayer until 2 minutes after')
     while True:
         now = dt.datetime.now(TZ)
         day = now.date()
@@ -266,21 +266,20 @@ def run():
                 pause_at = scheduled - dt.timedelta(minutes=1)
                 resume_at = scheduled + dt.timedelta(minutes=2)
 
-                # Do not pause late if the service missed the one-minute lead-in.
-                if key not in completed and key not in paused and pause_at <= now < scheduled:
+                # Keep checking throughout the whole window. Playback can start
+                # after the initial pause, so pause it again whenever needed.
+                if key not in completed and pause_at <= now < resume_at:
                     try:
                         did_pause = pause_if_playing()
                     except Exception:
-                        LOG.exception('Pause attempt failed for %s; retrying before prayer time', name)
+                        LOG.exception('Pause attempt failed for %s; will retry', name)
                         continue
                     if did_pause:
-                        paused.add(key)
-                        state_changed = True
-                        LOG.info('Paused for %s; scheduled prayer time is %s Cairo time', name, clock)
-                        send_whatsapp_message(f'Spotify paused for azan "{name}"')
-                    else:
-                        completed.add(key)
-                        state_changed = True
+                        if key not in paused:
+                            paused.add(key)
+                            state_changed = True
+                            LOG.info('Paused for %s; scheduled prayer time is %s Cairo time', name, clock)
+                            send_whatsapp_message(f'Spotify paused for azan "{name}"')
 
                 if key in paused and now >= resume_at:
                     try:
@@ -305,7 +304,7 @@ def run():
                 })
         except Exception:
             LOG.exception('Scheduler iteration failed')
-        time.sleep(5)
+        time.sleep(3)
 
 
 def main():
