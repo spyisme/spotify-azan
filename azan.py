@@ -250,7 +250,7 @@ def test_pause():
 
 
 def run():
-    LOG.info('Scheduler started: Cairo, Egyptian Survey method 5, check playback every 3 seconds from 1 minute before prayer until 2 minutes after')
+    LOG.info('Scheduler started: Cairo, Egyptian Survey method 5, check playback every 3 seconds from 1 minute before prayer until 5 minutes after')
     while True:
         now = dt.datetime.now(TZ)
         day = now.date()
@@ -264,7 +264,7 @@ def run():
                 key = f'{day.isoformat()}:{name}'
                 scheduled = dt.datetime.combine(day, dt.time.fromisoformat(clock), TZ)
                 pause_at = scheduled - dt.timedelta(minutes=1)
-                resume_at = scheduled + dt.timedelta(minutes=2)
+                resume_at = scheduled + dt.timedelta(minutes=5)
 
                 # Keep checking throughout the whole window. Playback can start
                 # after the initial pause, so pause it again whenever needed.
